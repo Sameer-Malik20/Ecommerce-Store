@@ -10,8 +10,8 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:3000", // frontend ka origin
-    credentials: true, // cookies allow karein
+    origin: "http://localhost:3000", 
+    credentials: true, 
   })
 );
 app.use(cookieParser());
