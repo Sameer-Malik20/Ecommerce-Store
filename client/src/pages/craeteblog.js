@@ -18,13 +18,9 @@ const CreateBlog = () => {
     setLoading(true);
     try {
       const blog = { title, description, image, price, category }; // REMOVE dueDate, ADD category
-      const res = await axios.post(
-        "https://ecommerce-2046.onrender.com/api/create",
-        blog,
-        {
-          withCredentials: true,
-        }
-      );
+      const res = await axios.post("http://localhost:5000/api/create", blog, {
+        withCredentials: true,
+      });
       if (res.status === 201) {
         setTitle("");
         setDescription("");

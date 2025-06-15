@@ -2,15 +2,57 @@ const Footer = () => {
   return (
     <footer className="bg-white dark:bg-gray-900">
       <div className="container flex flex-col items-center justify-between p-6 mx-auto space-y-4 sm:space-y-0 sm:flex-row">
-        <a href="#">
-          <img
-            className="w-auto h-7"
-            src="https://merakiui.com/images/full-logo.svg"
-            alt
-          />
+        <a href="/">
+          <svg
+            className="w-auto h-14 sm:h-16"
+            viewBox="0 0 300 100"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <linearGradient
+                id="logoGradient"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="0%"
+              >
+                <stop offset="0%" stopColor="#6366F1" /> {/* Indigo-500 */}
+                <stop offset="100%" stopColor="#3B82F6" /> {/* Blue-500 */}
+              </linearGradient>
+            </defs>
+
+            {/* Circle Icon */}
+            <circle cx="50" cy="50" r="40" fill="url(#logoGradient)" />
+
+            {/* Shopping Bag Icon inside circle */}
+            <path
+              d="M43 35 h14 a2 2 0 0 1 2 2 v26 a2 2 0 0 1 -2 2 h-14 a2 2 0 0 1 -2 -2 v-26 a2 2 0 0 1 2 -2 z"
+              fill="white"
+            />
+            <path
+              d="M48 38 v5 a7 7 0 0 0 14 0 v-5"
+              stroke="url(#logoGradient)"
+              strokeWidth="2"
+              fill="none"
+            />
+
+            {/* Brand Name */}
+            <text
+              x="110"
+              y="60"
+              textAnchor="start"
+              fontSize="32"
+              fontWeight="700"
+              fontFamily="'Segoe UI', Arial, sans-serif"
+              fill="url(#logoGradient)"
+            >
+              ShopNexa
+            </text>
+          </svg>
         </a>
+
         <p className="text-sm text-gray-600 dark:text-gray-300">
-          © Copyright 2021. All Rights Reserved.
+          © Copyright 2025. All Rights Reserved.
         </p>
         <div className="flex -mx-2">
           <a

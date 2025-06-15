@@ -9,6 +9,8 @@ import Login from "./componets/Login";
 import Hero from "./componets/hero";
 import CartPage from "./pages/cartPage";
 import About from "./componets/about";
+import AdminLogin from "./componets/admin/adminLogin";
+import Dashboard from "./componets/admin/dashboard";
 
 function App() {
   const [dark, setDark] = useState(
@@ -46,6 +48,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/about" element={<About />} />
+          {/* Admin Routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<Dashboard />} />
         </Routes>
       </div>
     </Router>

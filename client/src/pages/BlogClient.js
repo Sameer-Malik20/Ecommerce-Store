@@ -78,12 +78,9 @@ const BlogClient = ({}) => {
   const allblogs = async () => {
     setLoading(true); // start loading
     try {
-      const res = await axios.get(
-        `https://ecommerce-2046.onrender.com/api/allblogs`,
-        {
-          withCredentials: true,
-        }
-      );
+      const res = await axios.get(`http://localhost:5000/api/allblogs`, {
+        withCredentials: true,
+      });
       if (res.status === 200) {
         setBlogs(res.data.blogs);
       }
@@ -108,17 +105,14 @@ const BlogClient = ({}) => {
     if (!window.confirm("Are you sure you want to delete this blog?")) return;
     setDeleteLoadingId(id);
     try {
-      const res = await axios.delete(
-        `https://ecommerce-2046.onrender.com/api/delete/${id}`,
-        {
-          withCredentials: true,
-        }
-      );
+      const res = await axios.delete(`http://localhost:5000/api/delete/${id}`, {
+        withCredentials: true,
+      });
       if (res.status === 200) {
         allblogs();
       }
     } catch (e) {
-      alert("Error deleting blog");
+      alert("please login");
     }
     setDeleteLoadingId(null);
   };
@@ -141,7 +135,7 @@ const BlogClient = ({}) => {
     setUpdateLoading(true);
     try {
       const res = await axios.put(
-        `https://ecommerce-2046.onrender.com/api/update/${editBlog._id}`,
+        `http://localhost:5000/api/update/${editBlog._id}`,
         {
           title: editTitle,
           description: editDescription,
@@ -164,12 +158,20 @@ const BlogClient = ({}) => {
     setUpdateLoading(false);
   };
 
-  // Add to cart handler
   const handleAddToCart = async (blogId) => {
     try {
       const userId = localStorage.getItem("userId");
+      if (!userId) {
+        alert("Please login first");
+        return;
+      }
+
+      if (!userId) {
+        return alert("Please login to add items to the cart.");
+      }
+
       await axios.post(
-        "https://ecommerce-2046.onrender.com/api/cart/add",
+        "http://localhost:5000/api/cart/add",
         {
           userId,
           blogId,
@@ -178,10 +180,15 @@ const BlogClient = ({}) => {
       );
       alert("Added to cart!");
     } catch (e) {
-      alert("Cart error");
+      if (e.response && e.response.data && e.response.data.message) {
+        alert(`Error: ${e.response.data.message}`);
+      } else if (e.message) {
+        alert(`Error: ${e.message}`);
+      } else {
+        alert("An unexpected error occurred.");
+      }
     }
   };
-
   // Skeleton loader component
   const BlogSkeleton = () => (
     <li className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-purple-100 dark:border-slate-700 flex flex-col overflow-hidden p-0">

@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import router from "./routes/blogRoutes.js";
+import routeradmin from "./routes/adminRoutes.js";
 import cookieParser from "cookie-parser";
 dotenv.config();
 const app = express();
@@ -34,6 +35,7 @@ connectDB();
 
 app.use("/api/", router);
 app.use("/api/cart", router);
+app.use("/api/admin", routeradmin);
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`server running on PORT ${PORT}`);

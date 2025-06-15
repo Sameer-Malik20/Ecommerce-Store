@@ -17,11 +17,11 @@ const authMid = async (req, res, next) => {
 
     if (!user) return res.status(401).json({ message: "User not found" });
 
-    // 🔥 Attach user info to request
+    
     req.user = {
       id: user._id,
       username: user.username,
-      role: user.role, // ❗ यह जरूरी है admin check के लिए
+      role: user.role, 
     };
 
     next();

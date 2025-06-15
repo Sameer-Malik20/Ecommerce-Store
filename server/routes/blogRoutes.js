@@ -4,13 +4,12 @@ import { Login, logout, Signup } from "../controller/auth.js";
 import authMid from "../Authmiddleware.js";
 import addReview from "../controller/addReview.js";
 import deleteReview from "../controller/deleteReview.js";
-
-import verifyAdmin from "../controller/varifyAdmin.js";
 import CartAdd, { CartRemove, updateQuantity } from "../controller/addcart.js";
 import Cart from "../models/addCart.js";
+import { verifyAdmin } from "../controller/admin.js";
 const router = Router();
 
-router.post("/create", authMid, Create);
+router.post("/create", verifyAdmin, authMid, Create);
 router.put("/update/:id", authMid, Update);
 router.delete("/delete/:id", authMid, Delete);
 router.get("/allblogs", getAllBlogs);
@@ -22,7 +21,6 @@ router.delete("/blog/:blogId/review/:reviewId", authMid, deleteReview);
 router.get("/currentuser", authMid, (req, res) => {
   res.json({ userId: req.user.id, username: req.user.username });
 });
-router.post("/verify-admin", verifyAdmin);
 router.post("/add", CartAdd);
 router.get("/:userId", async (req, res) => {
   const cart = await Cart.findOne({ user: req.params.userId }).populate(

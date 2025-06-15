@@ -10,21 +10,21 @@ const BlogDetail = () => {
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState(null);
   const [mainImage, setMainImage] = useState("");
+  const [currentUsername, setCurrentUsername] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
+    axios.get(`http://localhost:5000/api/allblogs`).then((res) => {
+      const found = res.data.blogs.find((b) => b._id === id);
+      setBlog(found);
+      setMainImage(found?.image || "");
+    });
     axios
-      .get(`https://ecommerce-2046.onrender.com/api/allblogs`)
+      .get(`http://localhost:5000/api/currentuser`, { withCredentials: true })
       .then((res) => {
-        const found = res.data.blogs.find((b) => b._id === id);
-        setBlog(found);
-        setMainImage(found?.image || "");
-      });
-    axios
-      .get(`https://ecommerce-2046.onrender.com/api/currentuser`, {
-        withCredentials: true,
+        setUserId(res.data.userId);
+        setCurrentUsername(res.data.username); // save username
       })
-      .then((res) => setUserId(res.data.userId))
       .catch(() => {});
   }, [id]);
 
@@ -32,13 +32,13 @@ const BlogDetail = () => {
     try {
       const userId = localStorage.getItem("userId");
       await axios.post(
-        "https://ecommerce-2046.onrender.com/api/cart/add",
+        "http://localhost:5000/api/cart/add",
         { userId, blogId: blog._id },
         { withCredentials: true }
       );
       alert("Added to cart!");
     } catch (e) {
-      alert("Cart error");
+      alert("Please Login");
     }
   };
 
@@ -89,7 +89,6 @@ const BlogDetail = () => {
           {/* Product Details */}
           <div className="w-full md:w-1/2 px-4">
             <h2 className="text-3xl font-bold mb-2">{blog.title}</h2>
-            <p className="text-gray-600 mb-4">SKU: {blog._id}</p>
             <div className="mb-4">
               <span className="text-2xl font-bold mr-2">₹{blog.price}</span>
               {/* <span className="text-gray-500 line-through">$399.99</span> */}
@@ -219,15 +218,15 @@ const BlogDetail = () => {
               setLoading(true);
               try {
                 await axios.post(
-                  `https://ecommerce-2046.onrender.com/api/blog/${blog._id}/review`,
-                  { comment: review, rating },
+                  `http://localhost:5000/api/blog/${blog._id}/review`,
+                  { comment: review, rating, currentUsername, userId },
                   { withCredentials: true }
                 );
                 setReview("");
                 setRating(5);
                 // Reload blog to show new review
                 const res = await axios.get(
-                  `https://ecommerce-2046.onrender.com/api/allblogs`
+                  `http://localhost:5000/api/allblogs`
                 );
                 const found = res.data.blogs.find((b) => b._id === blog._id);
                 setBlog(found);
@@ -327,12 +326,12 @@ const BlogDetail = () => {
                         <button
                           onClick={async () => {
                             await axios.delete(
-                              `https://ecommerce-2046.onrender.com/api/blog/${blog._id}/review/${r._id}`,
+                              `http://localhost:5000/api/blog/${blog._id}/review/${r._id}`,
                               { withCredentials: true }
                             );
                             // Reload blog to update reviews
                             const res = await axios.get(
-                              `https://ecommerce-2046.onrender.com/api/allblogs`
+                              `http://localhost:5000/api/allblogs`
                             );
                             const found = res.data.blogs.find(
                               (b) => b._id === blog._id

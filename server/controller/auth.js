@@ -1,89 +1,105 @@
+// controllers/authController.js
 import User from "../models/user.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 
+const JWT_SECRET = process.env.JWT_SECRET || "secret";
+
 const Signup = async (req, res) => {
-  const { username, password, role } = req.body;
+  const { username, email, password, role } = req.body;
   try {
-    // Check if user already exists
-    const existingUser = await User.findOne({ username });
+    // Check if user already exists (by username or email)
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser) {
-      return res.status(500).json({
-        message: "username Already Exist Please Login",
+      return res.status(400).json({
+        message: "Username or Email already exists. Please login.",
         success: false,
-        existingUser,
       });
     }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
       username,
+      email,
       password: hashedPassword,
-      role: role === "admin" ? "admin" : "user", // ✅ Safety check
+      role: role === "admin" ? "admin" : "user",
     });
+
     await newUser.save();
-    res.status(200).json({
-      message: "Signup Successfull Please Login",
+
+    res.status(201).json({
+      message: "Signup successful. Please login.",
       success: true,
       newUser,
     });
   } catch (e) {
-    console.log(e.message);
+    console.error("Signup Error:", e.message);
     res.status(500).json({
-      message: "server error",
+      message: "Server error during signup",
       success: false,
     });
   }
 };
 
-const JWT_SECRET = process.env.JWT_SECRET;
 const Login = async (req, res) => {
   const { username, password } = req.body;
+
   try {
-    //find by email
     const user = await User.findOne({ username });
     if (!user) {
-      return res.status(500).json({
-        message: "User Not Found",
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
       });
     }
 
-    //compare hashedpassword
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(500).json({
+      return res.status(401).json({
         message: "Invalid credentials",
         success: false,
-        isMatch,
       });
     }
-    //generate JWT Token
-    const token = jwt.sign({ id: user._id.toString() }, JWT_SECRET, {
+
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, {
       expiresIn: "3d",
     });
+
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production" ? true : false,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 24 * 3, // 3 days
+      maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days
     });
-    return res.status(200).json({
+
+    res.status(200).json({
       message: "Login Successfully",
       success: true,
-      user,
       token,
       username: user.username,
+      user: {
+        id: user._id,
+        email: user.email,
+        username: user.username,
+        role: user.role,
+        isAdmin: user.role === "admin",
+      },
     });
   } catch (error) {
-    res.status(500).json({ message: "Error logging in", error });
+    console.error("Login Error:", error.message);
+    res.status(500).json({
+      message: "Error logging in",
+      success: false,
+    });
   }
 };
 
 const logout = async (req, res) => {
   res.clearCookie("token");
   res.status(200).json({
-    message: "logout successfully",
+    message: "Logout successfully",
   });
 };
 

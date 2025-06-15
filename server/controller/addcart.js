@@ -3,6 +3,7 @@ import Cart from "../models/addCart.js";
 const CartAdd = async (req, res) => {
   const { userId, blogId } = req.body;
   let cart = await Cart.findOne({ user: userId });
+
   if (!cart) {
     cart = new Cart({ user: userId, items: [{ blog: blogId, quantity: 1 }] });
   } else {
@@ -13,6 +14,7 @@ const CartAdd = async (req, res) => {
       cart.items.push({ blog: blogId, quantity: 1 });
     }
   }
+
   await cart.save();
   res.json({ success: true, cart });
 };

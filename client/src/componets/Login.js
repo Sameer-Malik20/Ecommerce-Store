@@ -8,11 +8,19 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const api = "https://ecommerce-2046.onrender.com/api/login";
+  const api = "http://localhost:5000/api/login";
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    // Input Validation (Optional but Recommended)
+    if (!username || !password) {
+      setError("Please enter both username and password");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch(api, {
         method: "POST",
@@ -22,26 +30,48 @@ const Login = () => {
         body: JSON.stringify({ username, password }),
         credentials: "include",
       });
+
+      // Check for response status
       if (!res.ok) {
-        throw new Error(`HTTP error! Status: ${res.status}`);
+        const errorResponse = await res.json();
+        throw new Error(
+          errorResponse.message || `HTTP Error! Status: ${res.status}`
+        );
       }
+
       const data = await res.json();
+
+      // Handle login response
       if (data.success) {
+        // Save token (JWT) if present
         if (data.token) {
           localStorage.setItem("token", data.token);
         }
-        if (data.user && data.user._id) {
-          localStorage.setItem("userId", data.user._id);
+
+        // Save userId or user data if needed
+        if (data.user && data.user.id) {
+          localStorage.setItem("userId", data.user.id);
         }
-        alert(`Welcome ${username}`);
+
+        // Optional: Save user info (like name/email)
+        if (data.user?.username) {
+          localStorage.setItem("username", data.user.username);
+        }
+
+        // Navigate to homepage or dashboard
+        alert(`Welcome ${data.user?.username || username}`);
         navigate("/");
       } else {
-        setError(data.message || "Login failed");
+        // If login failed due to backend validation
+        setError(data.message || "Login failed. Please try again.");
       }
     } catch (error) {
-      setError("Server not reachable. Check your internet and try again.");
+      // Catch all other errors
+      console.error("Login Error:", error);
+      setError("User Does Not Exist" || "Something went wrong during login.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -108,12 +138,6 @@ const Login = () => {
                     >
                       Password
                     </label>
-                    <Link
-                      to="/forgot"
-                      className="text-sm text-gray-400 focus:text-blue-500 hover:text-blue-500 hover:underline"
-                    >
-                      Forgot password?
-                    </Link>
                   </div>
                   <input
                     type="password"
@@ -160,16 +184,26 @@ const Login = () => {
                   </button>
                 </div>
               </form>
-              <p className="mt-6 text-sm text-center text-gray-400">
-                Don't have an account yet?{" "}
-                <Link
-                  to="/signup"
-                  className="text-blue-500 focus:outline-none focus:underline hover:underline"
-                >
-                  Sign up
-                </Link>
-                .
-              </p>
+              <div className="mt-5 sm:mt-8 flex flex-col sm:flex-row sm:justify-center lg:justify-start gap-32">
+                <div className="rounded-md shadow">
+                  <a
+                    href="/signup"
+                    className="w-full flex items-center justify-center px-8 py-3 text-base leading-6 font-medium rounded-md text-white bg-pink-400 hover:bg-pink-500 hover:text-white focus:ring ring-offset-2 ring-pink-400 focus:outline-none transition duration-150 ease-in-out md:py-4 md:text-lg md:px-10"
+                  >
+                    Signup
+                  </a>
+                </div>
+                <div className="rounded-md shadow">
+                  <a
+                    href="/admin/login"
+                    target="_blank"
+                    rel="noopener"
+                    className="w-full flex items-center justify-center px-8 py-3 text-base leading-6 font-medium rounded-md text-purple-700 dark:text-purple-700 bg-purple-100 hover:bg-purple-50 hover:text-purple-600 focus:ring ring-offset-2 ring-purple-100 focus:outline-none transition duration-150 ease-in-out md:py-4 md:text-lg md:px-10"
+                  >
+                    Admin
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>

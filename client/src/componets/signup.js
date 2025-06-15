@@ -4,24 +4,31 @@ import { useNavigate, Link } from "react-router-dom";
 const Login = () => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [email, SetEmail] = useState("");
   const [Error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const api = "https://ecommerce-2046.onrender.com/api/signup";
+  const api = "http://localhost:5000/api/signup";
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    if (!username || !password || !email) {
+      setError("Please enter all field");
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch(api, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, email }),
         credentials: "include",
       });
+
       if (!res.ok) {
         throw new Error(`HTTP error! Status: ${res.status}`);
       }
@@ -33,13 +40,13 @@ const Login = () => {
         if (data.user && data.user._id) {
           localStorage.setItem("userId", data.user._id);
         }
-        alert(`Welcome ${username}`);
+        alert(`Signup Successfully ${username}`);
         navigate("/login");
       } else {
         setError(data.message || "Login failed");
       }
     } catch (error) {
-      setError("Server not reachable. Check your internet and try again.");
+      setError("User Already Exist");
     }
     setLoading(false);
   };
@@ -85,18 +92,35 @@ const Login = () => {
               <form onSubmit={handleLogin}>
                 <div>
                   <label
-                    htmlFor="email"
+                    htmlFor="username"
                     className="block mb-2 text-sm text-gray-600 dark:text-gray-200"
                   >
                     Username
                   </label>
                   <input
                     type="text"
-                    name="email"
-                    id="email"
+                    name="username"
+                    id="username"
                     placeholder="sameer"
                     value={username}
                     onChange={(e) => setUserName(e.target.value)}
+                    className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
+                  />
+                </div>
+                <div className="mt-5">
+                  <label
+                    htmlFor="username"
+                    className="block mb-2 text-sm text-gray-600 dark:text-gray-200"
+                  >
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    placeholder="sameer@gmail.com"
+                    value={email}
+                    onChange={(e) => SetEmail(e.target.value)}
                     className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"
                   />
                 </div>

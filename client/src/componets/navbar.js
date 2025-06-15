@@ -15,7 +15,7 @@ const Navbar = ({ dark, setDark, selectedCategory, setSelectedCategory }) => {
 
   const handleLogout = async () => {
     try {
-      await fetch("https://ecommerce-2046.onrender.com/api/logout", {
+      await fetch("http://localhost:5000/api/logout", {
         method: "POST",
         credentials: "include",
       });
@@ -45,9 +45,7 @@ const Navbar = ({ dark, setDark, selectedCategory, setSelectedCategory }) => {
       try {
         const userId = localStorage.getItem("userId");
         if (!userId) return;
-        const res = await axios.get(
-          `https://ecommerce-2046.onrender.com/api/cart/${userId}`
-        );
+        const res = await axios.get(`http://localhost:5000/api/cart/${userId}`);
         setCartCount(res.data.cart?.items?.length || 0);
       } catch (e) {
         setCartCount(0);
@@ -73,12 +71,54 @@ const Navbar = ({ dark, setDark, selectedCategory, setSelectedCategory }) => {
       <div className="container h-16 px-4 py-2 mx-auto md:flex md:justify-between md:items-center">
         <div className="flex items-center justify-between">
           <a href="/">
-            <img
-              className="w-auto h-6 sm:h-7"
-              src="https://merakiui.com/images/full-logo.svg"
-              alt="Logo"
-            />
+            <svg
+              className="w-auto h-14 sm:h-16"
+              viewBox="0 0 300 100"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient
+                  id="logoGradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="0%"
+                >
+                  <stop offset="0%" stopColor="#6366F1" /> {/* Indigo-500 */}
+                  <stop offset="100%" stopColor="#3B82F6" /> {/* Blue-500 */}
+                </linearGradient>
+              </defs>
+
+              {/* Circle Icon */}
+              <circle cx="50" cy="50" r="40" fill="url(#logoGradient)" />
+
+              {/* Shopping Bag Icon inside circle */}
+              <path
+                d="M43 35 h14 a2 2 0 0 1 2 2 v26 a2 2 0 0 1 -2 2 h-14 a2 2 0 0 1 -2 -2 v-26 a2 2 0 0 1 2 -2 z"
+                fill="white"
+              />
+              <path
+                d="M48 38 v5 a7 7 0 0 0 14 0 v-5"
+                stroke="url(#logoGradient)"
+                strokeWidth="2"
+                fill="none"
+              />
+
+              {/* Brand Name */}
+              <text
+                x="110"
+                y="60"
+                textAnchor="start"
+                fontSize="32"
+                fontWeight="700"
+                fontFamily="'Segoe UI', Arial, sans-serif"
+                fill="url(#logoGradient)"
+              >
+                ShopNexa
+              </text>
+            </svg>
           </a>
+
           {/* Mobile menu button */}
           <div className="flex lg:hidden">
             <button
@@ -171,12 +211,6 @@ const Navbar = ({ dark, setDark, selectedCategory, setSelectedCategory }) => {
                 >
                   Logout
                 </button>
-                <Link
-                  className="my-2 text-gray-700 transition-colors duration-300 transform dark:text-gray-200 hover:text-blue-500 dark:hover:text-blue-400 md:mx-4 md:my-0"
-                  to="/create"
-                >
-                  Add Product
-                </Link>
               </>
             )}
           </div>

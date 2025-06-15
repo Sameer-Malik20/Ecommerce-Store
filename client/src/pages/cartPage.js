@@ -16,15 +16,15 @@ const CartPage = () => {
   const [discount, setDiscount] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  const isLoggedIn = !!localStorage.getItem("token");
+
   // Fetch cart from backend
   useEffect(() => {
     const fetchCart = async () => {
       try {
         const userId = localStorage.getItem("userId");
         if (!userId) return;
-        const res = await axios.get(
-          `https://ecommerce-2046.onrender.com/api/cart/${userId}`
-        );
+        const res = await axios.get(`http://localhost:5000/api/cart/${userId}`);
         // Convert backend cart to local cartItems format
         setCartItems(
           res.data.cart.items.map((item) => ({
@@ -56,10 +56,9 @@ const CartPage = () => {
   // Remove item
   const removeItem = async (index) => {
     const item = cartItems[index];
-    if (!window.confirm("Are you sure you want to remove this item?")) return;
     try {
       const userId = localStorage.getItem("userId");
-      await axios.post("https://ecommerce-2046.onrender.com/api/cart/remove", {
+      await axios.post("http://localhost:5000/api/cart/remove", {
         userId,
         blogId: item.id,
       });
@@ -95,7 +94,7 @@ const CartPage = () => {
     const item = cartItems[index];
     try {
       const userId = localStorage.getItem("userId");
-      await axios.post("https://ecommerce-2046.onrender.com/api/cart/update", {
+      await axios.post("http://localhost:5000/api/cart/update", {
         userId,
         blogId: item.id,
         quantity: newQty,
@@ -205,6 +204,16 @@ const CartPage = () => {
   const shippingCost = SHIPPING_RATES[shippingMethod] || 5;
   const tax = (subtotal - discount) * 0.075;
   const total = subtotal + shippingCost + tax - discount;
+
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <span className="text-lg text-gray-500">
+          Please login to view your cart.
+        </span>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -397,7 +406,7 @@ const CartPage = () => {
                         onClick={() => removeItem(index)}
                         className="text-red-500 hover:text-red-700 p-1"
                       >
-                        <i className="fas fa-trash"></i>
+                        delete
                       </button>
                     </td>
                   </tr>
