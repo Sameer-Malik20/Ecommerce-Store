@@ -68,11 +68,12 @@ const Login = async (req, res) => {
     });
 
     res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days
-    });
+  httpOnly: true,
+  secure: true,            
+  sameSite: "None",     
+  maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days
+});
+
 
     res.status(200).json({
       message: "Login Successfully",
