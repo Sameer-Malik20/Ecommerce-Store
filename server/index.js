@@ -10,7 +10,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:3000", 
+    origin: "https://magical-nougat-70d75b.netlify.app", 
     credentials: true, 
   })
 );
