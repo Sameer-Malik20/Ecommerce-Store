@@ -10,7 +10,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://verdant-concha-12400a.netlify.app",
     credentials: true,
   })
 );
